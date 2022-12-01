@@ -164,7 +164,8 @@ public class Ventana extends JFrame{
            }else{
 
             dispose();
-
+            
+            
            }
                
                 

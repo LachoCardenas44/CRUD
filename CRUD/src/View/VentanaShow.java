@@ -2,13 +2,12 @@ package View;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.awt.event.ActionEvent;
+import java.awt.event.*;
 import Model.GuardarCargarDatos;
 import Model.Usuario;
-import java.awt.event.ActionListener;
+
 import java.io.*;
 import java.util.ArrayList;
-
 import javax.imageio.ImageIO;
 import java.awt.*;
 
@@ -20,7 +19,7 @@ public class VentanaShow extends JFrame  {
         
 
 
-        setBounds(200, 100, 400, 400);
+        setBounds(400, 200, 400, 420);
 
         setResizable(false);
 
@@ -46,7 +45,8 @@ public class VentanaShow extends JFrame  {
 public void CerrarFrame(){
      dispose();
     }
-    private class ShowingPanel extends JPanel implements  ActionListener{
+    
+    private class ShowingPanel extends JPanel implements  ActionListener,MouseListener{
     
     
         private JTable table;
@@ -55,6 +55,9 @@ public void CerrarFrame(){
         private JButton back;
         private VentanaShow n ;
         ArrayList<Usuario> users = new ArrayList<>(){};
+        private String [] names; 
+        private JButton delete;
+        private int rowIndex = -1;
         
         
         public ShowingPanel() {
@@ -70,7 +73,7 @@ public void CerrarFrame(){
                 users = GuardarCargarDatos.Cargar();
             }catch(FileNotFoundException g1){
                  users = new ArrayList<>();
-                System.out.println("No hay usuarios logeados");
+                System.out.println(g1.getMessage());
             }catch(IOException g2){
                  users = new ArrayList<>();
                 System.out.println(g2.getMessage());
@@ -82,6 +85,7 @@ public void CerrarFrame(){
             user = new JLabel();
             ScrollPanel = new JScrollPane();
             back = new JButton();
+            delete = new JButton();
     
             setLayout(null);
             setBackground(new Color(102, 102, 102));
@@ -105,7 +109,7 @@ public void CerrarFrame(){
                         return false;
                     }
                 });
-            String [] names = new String[users.size()];
+            names = new String[users.size()];
                 for(int j = 0; j<names.length;j++){
                     names[j]=users.get(j).getFullname();
                     
@@ -120,37 +124,114 @@ public void CerrarFrame(){
     
            
             back.setForeground(Color.RED);
-            back.setBackground(Color.GRAY);
+            back.setBackground(new Color(51, 51, 51));
             back.setBounds(320, 320, 60, 40);
             back.setFont(new Font("Mathematica6", 3, 8));
             back.setText("BACK");
+            back.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, new Color(204, 153, 0)));
             back.addActionListener(this);
+
+            delete.setForeground(Color.RED);
+            delete.setBackground(new Color(51, 51, 51));
+            delete.setBounds(10, 320, 60, 40);
+            delete.setFont(new Font("Mathematica6", 3, 8));
+            delete.setText("DELETE");
+            delete.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, new Color(204, 153, 0)));
+            delete.addActionListener(this);
             
             ScrollPanel.setViewportView(table);
-            ScrollPanel.setBounds(320, 500, 5, 5);;
+            ScrollPanel.setBounds(80, 40, 20, 20);
     
     
             table.setVisible(true);
             table.setBackground(Color.RED.darker().darker());
             table.setForeground(Color.WHITE.darker());
             table.setBounds(80, 40, 235, 310);
-    
+            table.addMouseListener(this);
+            
+            
             add(back);
-            add(ScrollPanel);
+            //add(ScrollPanel);
             add(table);
-            add(user);       
+            add(user);  
+            add(delete);
             
         
     }
     
        
         public void actionPerformed(ActionEvent e) {
-         
+         if(e.getSource()==back){
             CerrarFrame();
+         }else{
+            EliminarUsuario(rowIndex);
+         }
+            
                
         }
+        public void EliminarUsuario(int index){
+            if(index==-1){
+
+            }else{
+                System.out.println(index);
+                users.remove(index);
+            
+
+                try{
+                    GuardarCargarDatos.Guardar(users);
+        
+                }catch(IOException o){
+                    System.out.println(o.getMessage());
+                }
+                try{
+                    users = GuardarCargarDatos.Cargar();
+                }catch(FileNotFoundException g1){
+                     users = new ArrayList<>();
+                    System.out.println(g1.getMessage());
+                }catch(IOException g2){
+                     users = new ArrayList<>();
+                    System.out.println(g2.getMessage());
+                }catch(ClassNotFoundException g3){
+                     users = new ArrayList<>();
+                    System.out.println(g3.getMessage());
+                }
+                dispose();
+                new VentanaShow();
+                
+            }
+            
+
+
+        }
     
-    
+        public void paintComponent(Graphics g){
+            super.paintComponent(g);
+            try{
+                image = ImageIO.read(new File("CRUD/src/Archivos/kkk2.jpg")); 
+            }catch(IOException e){
+                System.out.println("La imagen no se encuentra");
+            }
+            
+            g.drawImage(image, 0, 0, null);
+            
+        }
+
+        
+        public void mouseClicked(MouseEvent e) {
+            
+            if(e.getSource()==table){
+
+                Point point = e.getPoint();
+
+                 rowIndex = table.rowAtPoint(point);
+
+            }
+
+        }
+        public void mousePressed(MouseEvent e) {}
+        public void mouseReleased(MouseEvent e) {}
+        public void mouseEntered(MouseEvent e) {}
+        public void mouseExited(MouseEvent e) {}
         
         
     }

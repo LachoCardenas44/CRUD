@@ -2,7 +2,6 @@ package View;
 
 import Model.*;
 import javax.swing.*;
-import java.io.*;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -120,13 +119,19 @@ public class VentanaLogin extends JFrame{
           }
             
              Usuario usuario = new Usuario(namefield.getText(), passwordfield.getPassword());
-            usuarios.add(usuario);
+             if(usuario.getFullname().isEmpty()){
+
+             }else{
+                usuarios.add(usuario);
             try{
                 GuardarCargarDatos.Guardar(usuarios);
     
             }catch(IOException o){
                 System.out.println(o.getMessage());
             }
+
+             }
+            
            
             CerrarFrame();
             
